@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#06141e">
+<title>EV Vocab Hub — Workplace Writing II</title>
+
+<style>
+/* ==============================
+   BASE
+============================== */
+:root {
+    color-scheme: dark;
+    --bg: #06141e;
+    --panel: #102633;
+    --panel-light: #173644;
+    --border: #2b4c59;
+    --text: #edf9f6;
+    --muted: #9bb8c0;
+    --green: #8df7b0;
+    --cyan: #5de2eb;
+    --orange: #ffbd80;
+    --red: #ff9b91;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, "Microsoft JhengHei", sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+button, select { font: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+button:disabled { cursor: default; }
+button:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 5px;
+}
+
+button { -webkit-tap-highlight-color: transparent; }
+
+.hidden { display: none !important; }
+
+button, .card-face {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ==============================
+   BACKGROUND
+============================== */
+.background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.background::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 12% 10%, #16b8a01a, transparent 48%),
+        radial-gradient(ellipse at 90% 85%, #2ab7d51c, transparent 48%);
+}
+
+.background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(#76c9bd07 1px, transparent 1px),
+        linear-gradient(90deg, #76c9bd07 1px, transparent 1px);
+    background-size: 62px 62px;
+    mask-image: linear-gradient(transparent, black);
+}
+
+#emoji-bg {
+    position: absolute;
+    inset: 0;
+    transition: opacity .5s;
+}
+
+body[data-mode="flashcard"] #emoji-bg { opacity: .55; }
+body[data-mode="game"] #emoji-bg { opacity: .2; }
+
+.floating-emoji {
+    position: absolute;
+    bottom: -100px;
+    opacity: 0;
+    animation: rise linear infinite;
+    filter: saturate(.8);
+}
+
+@keyframes rise {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(-8deg);
+        opacity: 0;
+    }
+    12% { opacity: .17; }
+    80% { opacity: .14; }
+    100% {
+        transform: translate3d(var(--drift), -125vh, 0) rotate(12deg);
+        opacity: 0;
+    }
+}
+
+.app {
+    position: relative;
+    z-index: 1;
+}
+
+.view {
+    display: none;
+    width: 100%;
+    max-width: 1120px;
+    margin: auto;
+    padding: 24px 20px;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.view.active { display: flex; flex-direction: column; }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.back {
+    color: #d1e7e9;
+    background: #102633e8;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 11px 18px;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .6px;
+}
+
+.back:hover { color: var(--green); border-color: var(--green); }
+
+.tag {
+    padding: 8px 12px;
+    border: 1px solid #8df7b044;
+    background: #8df7b00c;
+    border-radius: 100px;
+    color: var(--green);
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.muted { color: var(--muted); }
+
+.station-label {
+    color: var(--cyan);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+/* ==============================
+   LANDING PAGE
+============================== */
+.landing {
+    justify-content: center;
+    gap: 34px;
+    padding-top: 42px;
+    padding-bottom: 42px;
+}
+
+.site-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.brand {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.brand span { color: var(--green); }
+
+.online {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+}
+
+.online-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 13px #8df7b077;
+}
+
+.hero { text-align: center; }
+
+.hero-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+    border: 1px solid #8df7b055;
+    background: linear-gradient(135deg, #8df7b019, #5de2eb12);
+    font-size: 37px;
+    box-shadow: 0 0 45px #8df7b00b;
+    margin-bottom: 14px;
+}
+
+.hero .course {
+    color: #d0e4e7;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 8px 0;
+}
+
+.hero .module {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 8px 0;
+    line-height: 1.7;
+}
+
+h1 {
+    margin: 18px 0 12px;
+    font-size: clamp(47px, 9vw, 92px);
+    font-weight: 900;
+    line-height: 1.03;
+    letter-spacing: -3px;
+}
+
+h1 span {
+    background: linear-gradient(110deg, var(--green), var(--cyan));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.slogan { color: #c1dadd; font-size: 18px; }
+
+.hero-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.hero-info span {
+    padding: 8px 13px;
+    border: 1px solid #2b4c59;
+    border-radius: 100px;
+    background: #102633aa;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.mode-card {
+    position: relative;
+    text-align: left;
+    border: 1px solid #31515d;
+    color: var(--text);
+    background: linear-gradient(145deg, #16313eea, #0d222eea);
+    border-radius: 25px;
+    padding: 24px;
+    overflow: hidden;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+
+.mode-card::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    right: -45px;
+    bottom: -45px;
+    border: 12px solid var(--accent);
+    border-radius: 50%;
+    opacity: .08;
+}
+
+.mode-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 15px 35px #0003;
+}
+
+.mode-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mode-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid #ffffff22;
+    border-radius: 15px;
+    background: #06141e80;
+    font-size: 25px;
+}
+
+.mode-number {
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.mode-card h2 { font-size: 22px; margin: 20px 0 10px; }
+.mode-card p { color: var(--muted); line-height: 1.65; margin: 0; font-size: 14px; }
+.mode-link { color: var(--accent); font-size: 12px; font-weight: 800; margin-top: 22px; }
+
+.landing-footer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px 22px;
+    color: #7e9da7;
+    font-size: 11px;
+}
+
+.motion-control {
+    color: #aecbd1;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    font-size: 11px;
+}
+
+/* ==============================
+   FLASH CARDS
+============================== */
+.flash-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 10px 0 35px;
+}
+
+.progress-panel {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 15px 18px;
+    border: 1px solid var(--border);
+    background: #102633dd;
+    border-radius: 18px;
+}
+
+.progress-details { flex: 1; }
+.progress-line { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.progress-caption { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; font-weight: 800; }
+#fc-counter { color: var(--green); font-size: 12px; font-weight: 900; }
+
+.battery-track {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid #486a70;
+    border-radius: 6px;
+    position: relative;
+    margin-right: 5px;
+}
+
+.battery-track::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 6px;
+    bottom: 6px;
+    width: 4px;
+    border-radius: 0 2px 2px 0;
+    background: #486a70;
+}
+
+.battery-segment { height: 11px; flex: 1; background: #28414b; border-radius: 2px; }
+.battery-segment.filled { background: var(--green); box-shadow: 0 0 8px #8df7b022; }
+
+.progress-icon { font-size: 28px; }
+
+.card-scene {
+    width: 100%;
+    max-width: 720px;
+    height: 395px;
+    perspective: 1200px;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .55s ease;
+}
+
+.card-inner.flipped { transform: rotateY(180deg); }
+
+.card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 83px 30px 38px;
+    background: linear-gradient(145deg, #15323f, #0c222e);
+    border: 1px solid #466b73;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px #0004;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    text-align: center;
+    cursor: pointer;
+}
+
+.card-face::after {
+    content: "";
+    position: absolute;
+    bottom: 15px;
+    width: 45px;
+    height: 4px;
+    background: #40606a;
+    border-radius: 100px;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(145deg, #143f3a, #103343);
+    border-color: #8df7b088;
+}
+
+.pos {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 100px;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    font-weight: 800;
+    border: 1px solid currentColor;
+}
+
+.noun { color: #80d9ff; }
+.verb { color: #ffd29a; }
+.adjective { color: #a9f7ba; }
+
+.card-face > .pos { position: absolute; top: 22px; left: 22px; }
+
+.audio {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: 1px solid #ffffff33;
+    background: #06141e70;
+    color: #c9f5ee;
+    padding: 10px 13px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .7px;
+}
+
+.audio:hover { border-color: var(--green); }
+
+#fc-word {
+    font-size: clamp(28px, 6vw, 58px);
+    letter-spacing: -.5px;
+    margin: 8px 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.flip-hint {
+    color: #a4c2c5;
+    border: 1px solid #355760;
+    background: #06141e55;
+    border-radius: 100px;
+    padding: 10px 16px;
+    margin-top: 28px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+#fc-meaning {
+    margin: 0 0 18px;
+    font-size: clamp(22px, 4.5vw, 36px);
+    line-height: 1.5;
+}
+
+.example-label { font-size: 10px; letter-spacing: 2px; color: #a1ccc4; margin-bottom: 9px; }
+
+#fc-example {
+    margin: 0;
+    padding: 17px 20px;
+    width: 100%;
+    border: 1px solid #8df7b02f;
+    border-radius: 15px;
+    background: #06141e55;
+    color: #d5f8ed;
+    font-size: clamp(17px, 2.8vw, 24px);
+    line-height: 1.6;
+}
+
+.card-nav { display: flex; width: 100%; max-width: 720px; gap: 14px; }
+
+.card-nav button {
+    flex: 1;
+    padding: 17px;
+    border-radius: 16px;
+    border: 1px solid #395c66;
+    color: var(--text);
+    background: #132e3a;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.card-nav .next { background: var(--green); color: #08281e; border-color: var(--green); }
+.card-nav button:disabled { opacity: .35; }
+.keyboard-tip { font-size: 11px; color: #7f9fa8; text-align: center; line-height: 1.6; }
+
+/* ==============================
+   SHARED GAME STYLES
+============================== */
+.game-view {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 650px;
+}
+
+.game-stats { display: flex; align-items: center; gap: 14px; }
+
+.score-panel {
+    padding: 10px 15px;
+    border: 1px solid #3c6265;
+    border-radius: 13px;
+    background: #102633ee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.score-label { font-size: 9px; color: #a5c4c9; letter-spacing: 1.4px; }
+.score-value { color: var(--green); font-size: 21px; font-weight: 900; font-family: monospace; }
+
+.answer {
+    position: relative;
+    min-height: 79px;
+    padding: 16px 14px;
+    border: 1px solid #3a5b67;
+    background: linear-gradient(145deg, #173441ee, #102633ee);
+    border-radius: 17px;
+    color: var(--text);
+    font-size: clamp(16px, 2.2vw, 23px);
+    font-weight: 800;
+    line-height: 1.55;
+    transition: border-color .15s, background .15s, transform .15s;
+}
+
+.answer:hover:not(:disabled) { border-color: var(--green); background: #1b424b; }
+.answer:active:not(:disabled) { transform: scale(.98); }
+.answer:disabled { opacity: .75; }
+
+.correct-answer {
+    border-color: var(--green) !important;
+    background: #194d3d !important;
+    box-shadow: 0 0 25px #8df7b022;
+    opacity: 1 !important;
+}
+
+.wrong-answer {
+    border-color: var(--orange) !important;
+    background: #513b2d !important;
+    opacity: 1 !important;
+}
+
+@keyframes energyPulse {
+    0% { box-shadow: 0 0 0 0 #8df7b04d; }
+    100% { box-shadow: 0 0 0 20px #8df7b000; }
+}
+
+.energy-pulse { animation: energyPulse .6s ease-out; }
+
+.feedback {
+    min-height: 37px;
+    padding: 9px 3px 3px;
+    text-align: center;
+    color: var(--green);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 700;
+}
+
+/* ==============================
+   FALLING WORDS
+============================== */
+.life-battery {
+    display: flex;
+    gap: 4px;
+    padding: 5px;
+    border: 1px solid #53776f;
+    border-radius: 6px;
+    position: relative;
+    margin-right: 4px;
+}
+
+.life-battery::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 12px;
+    top: 8px;
+    right: -5px;
+    background: #53776f;
+    border-radius: 0 2px 2px 0;
+}
+
+.life-cell { width: 15px; height: 18px; border-radius: 2px; background: var(--green); }
+.life-cell.empty { background: #29414b; }
+.life-cell.warning { background: var(--orange); }
+
+.fall-area {
+    flex: 1;
+    min-height: 180px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(#0b1e2be8, #102b35e8);
+    border: 1px solid #355663;
+    border-radius: 24px;
+}
+
+.lane-lines {
+    position: absolute;
+    top: 45px;
+    bottom: 30px;
+    left: 18%;
+    right: 18%;
+    border-left: 1px dashed #8df7b014;
+    border-right: 1px dashed #8df7b014;
+}
+
+.fall-caption {
+    position: absolute;
+    top: 14px;
+    left: 18px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #82a7ae;
+}
+
+.finish-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    border-top: 1px solid #8df7b04d;
+    background: repeating-linear-gradient(90deg, #8df7b01f 0 20px, transparent 20px 40px);
+}
+
+.fall-word {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 92%;
+    padding: 16px 26px;
+    border-radius: 18px;
+    border: 1px solid #8df7b0aa;
+    background: #16323ff5;
+    box-shadow: 0 0 35px #8df7b01c;
+    color: var(--green);
+    font-size: clamp(26px, 5vw, 48px);
+    font-weight: 900;
+    text-align: center;
+    overflow-wrap: anywhere;
+    z-index: 2;
+}
+
+.fall-pos { font-size: 10px; letter-spacing: 2px; color: #b5d0d2; text-transform: uppercase; margin-top: 8px; }
+
+@keyframes fall {
+    from { top: -135px; }
+    to { top: 100%; }
+}
+
+.options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+
+.game-over {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: #06141ef5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    text-align: center;
+}
+
+.game-over-symbol { font-size: 45px; }
+.game-over h2 { font-size: clamp(30px, 6vw, 55px); margin: 14px 0 8px; color: var(--orange); }
+.game-over p { color: #c3dde0; font-size: 18px; }
+.game-over .final-number { color: var(--green); font-weight: 900; font-size: 32px; }
+
+.primary {
+    padding: 16px 28px;
+    border-radius: 15px;
+    background: var(--green);
+    color: #08281e;
+    border: 0;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+/* ==============================
+   FOUR CORNERS
+============================== */
+.c4-layout {
+    flex: 1;
+    min-height: 450px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(95px, 1fr) auto minmax(95px, 1fr);
+    gap: 16px;
+}
+
+.port-answer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px;
+}
+
+.port-label {
+    font-family: monospace;
+    color: #82b7bc;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 400;
+}
+
+.port-symbol { color: var(--cyan); font-size: 15px; }
+
+.question-box {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 88%;
+    padding: 23px 25px;
+    background: linear-gradient(145deg, #153840f2, #112d3cf2);
+    border: 1px solid #5de2eb88;
+    border-radius: 23px;
+    text-align: center;
+    box-shadow: 0 0 35px #5de2eb0b;
+}
+
+.question-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: var(--cyan);
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+#c4-question {
+    font-size: clamp(21px, 3.3vw, 34px);
+    line-height: 1.65;
+    margin: 17px 0;
+    overflow-wrap: anywhere;
+}
+
+.highlight {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 6px;
+    font-weight: 900;
+}
+
+.question-hint { color: #a7c9cc; font-size: 11px; line-height: 1.5; }
+#c4-feedback { min-height: 25px; margin-top: 10px; font-size: 13px; line-height: 1.6; font-weight: 800; }
+#c4-progress { color: var(--muted); font-size: 11px; }
+
+/* ==============================
+   RESPONSIVE / REDUCED MOTION
+============================== */
+@media (max-width: 720px) {
+    .view { padding: 18px 14px; }
+    .landing { padding-top: 25px; padding-bottom: 32px; gap: 26px; }
+    .menu { grid-template-columns: 1fr; gap: 13px; }
+    .mode-card { padding: 19px; }
+    .mode-card h2 { margin: 12px 0 7px; }
+    .mode-link { margin-top: 13px; }
+    .mode-icon { width: 40px; height: 40px; font-size: 22px; }
+    .hero-symbol { width: 62px; height: 62px; font-size: 31px; }
+    h1 { letter-spacing: -2px; }
+    .hero .course { font-size: 15px; }
+    .slogan { font-size: 16px; }
+    .card-scene { height: 395px; }
+    .card-face { padding: 80px 20px 35px; }
+    .card-face > .pos { top: 20px; left: 17px; }
+    .audio { top: 19px; right: 16px; font-size: 10px; padding: 9px 11px; }
+    .game-stats { gap: 9px; }
+    .score-panel { padding: 9px 11px; }
+    .score-value { font-size: 18px; }
+    .c4-layout { gap: 11px; }
+    .question-box { width: 100%; padding: 20px 15px; }
+    .answer { font-size: 16px; padding: 12px 9px; }
+    .options { gap: 9px; }
+    .toolbar { gap: 9px; }
+    .tag { font-size: 9px; padding: 7px 9px; }
+}
+
+@media (max-width: 380px) {
+    .back { padding: 10px 12px; font-size: 11px; }
+    .score-label { display: none; }
+    .card-scene { height: 410px; }
+    .answer { font-size: 15px; }
+}
+
+body.motion-off .floating-emoji { animation-play-state: paused; }
+body.motion-off #emoji-bg { opacity: .04; }
+body.motion-off .card-inner,
+body.motion-off .mode-card,
+body.motion-off .answer { transition: none; }
+body.motion-off .energy-pulse { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .floating-emoji { animation: none; display: none; }
+    .card-inner, .mode-card, .answer, #emoji-bg { transition: none; }
+    .energy-pulse { animation: none; }
+}
+</style>
+</head>
+
+<body data-mode="landing">
+<div class="background" aria-hidden="true">
+    <div id="emoji-bg"></div>
+</div>
+
+<div class="app">
+
+<!-- ==============================
+     LANDING
+============================== -->
+<main id="view-landing" class="view landing active">
+    <div class="site-top">
+        <div class="brand">YOUTH <span>COLLEGE</span></div>
+        <div class="online"><span class="online-dot"></span> LEARNING STATION</div>
+    </div>
+
+    <header class="hero">
+        <div class="hero-symbol" aria-hidden="true">🔌</div>
+        <p class="course">Vocational English 2D</p>
+        <p class="module">Workplace Writing II · Integrated Assessment</p>
+        <h1>EV <span>VOCAB HUB</span></h1>
+        <p class="slogan">Charge up your vocabulary.</p>
+        <div class="hero-info">
+            <span>62 vocabulary entries</span>
+            <span>28 nouns · 22 verbs · 12 adjectives</span>
+            <span>3 learning modes</span>
+        </div>
+    </header>
+
+    <div class="menu">
+        <button class="mode-card" style="--accent:#8df7b0"
+                onclick="switchView('view-flashcard')">
+            <div class="mode-top">
+                <span class="mode-icon" aria-hidden="true">🔋</span>
+                <span class="mode-number">STATION 01</span>
+            </div>
+            <h2>Flash Cards</h2>
+            <p>Recharge your word knowledge with meanings, examples and pronunciation.</p>
+            <div class="mode-link">START LEARNING →</div>
+        </button>
+
+        <button class="mode-card" style="--accent:#5de2eb"
+                onclick="switchView('view-falling')">
+            <div class="mode-top">
+                <span class="mode-icon" aria-hidden="true">⚡</span>
+                <span class="mode-number">STATION 02</span>
+            </div>
+            <h2>Falling Words</h2>
+            <p>Choose the correct meaning before the word reaches the charging line.</p>
+            <div class="mode-link">POWER UP →</div>
+        </button>
+
+        <button class="mode-card" style="--accent:#b7d5ff"
+                onclick="switchView('view-corners')">
+            <div class="mode-top">
+                <span class="mode-icon" aria-hidden="true">🔌</span>
+                <span class="mode-number">STATION 03</span>
+            </div>
+            <h2>Four Corners</h2>
+            <p>Connect each highlighted word to the correct meaning in a new context.</p>
+            <div class="mode-link">MAKE A CONNECTION →</div>
+        </button>
+    </div>
+
+    <footer class="landing-footer">
+        <span>Learn the words. Explore new contexts.</span>
+        <button id="motion-toggle" class="motion-control"
+                onclick="toggleMotion()" aria-pressed="false">
+            Pause background animation
+        </button>
+    </footer>
+</main>
+
+<!-- ==============================
+     FLASH CARDS
+============================== -->
+<section id="view-flashcard" class="view" aria-label="Flash cards">
+    <div class="toolbar">
+        <button class="back" onclick="switchView('view-landing')">← BACK TO MENU</button>
+        <span class="tag">Station 01 · Flash Cards</span>
+    </div>
+
+    <div class="flash-main">
+        <div class="progress-panel">
+            <span class="progress-icon" aria-hidden="true">🔋</span>
+            <div class="progress-details">
+                <div class="progress-line">
+                    <span class="progress-caption">BROWSING PROGRESS</span>
+                    <span id="fc-counter">1 / 62</span>
+                </div>
+                <div id="fc-battery" class="battery-track"
+                     role="progressbar" aria-label="Card browsing progress"
+                     aria-valuemin="0" aria-valuemax="62" aria-valuenow="1"></div>
+            </div>
+        </div>
+
+        <div class="card-scene">
+            <div id="fc-inner" class="card-inner">
+                <div id="fc-front" class="card-face"
+                     role="button" tabindex="0" aria-label="Show the meaning and example"
+                     onclick="toggleFlashcard()" onkeydown="handleCardKey(event)">
+                    <span id="fc-pos-front" class="pos noun">Noun</span>
+                    <button class="audio" onclick="playFcAudio(event, false)"
+                            aria-label="Hear the word">▶ LISTEN</button>
+                    <div class="station-label">WORD DISPLAY</div>
+                    <h2 id="fc-word">bill</h2>
+                    <span class="flip-hint">TAP TO REVEAL</span>
+                </div>
+
+                <div id="fc-back" class="card-face card-back"
+                     role="button" tabindex="-1" aria-label="Show the English word"
+                     onclick="toggleFlashcard()" onkeydown="handleCardKey(event)">
+                    <span id="fc-pos-back" class="pos noun">Noun</span>
+                    <button class="audio" onclick="playFcAudio(event, true)"
+                            aria-label="Hear the example sentence">▶ LISTEN</button>
+                    <h2 id="fc-meaning">帳單</h2>
+                    <div class="example-label">EXAMPLE IN CONTEXT</div>
+                    <p id="fc-example">Could we have the bill, please?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-nav">
+            <button id="btn-prev" onclick="moveCard(-1)">← PREV</button>
+            <button id="btn-next" class="next" onclick="moveCard(1)">NEXT →</button>
+        </div>
+
+        <div class="keyboard-tip">
+            Tap the card to flip · Use ← / → to change cards<br>
+            The battery shows browsing progress, not a test score.
+        </div>
+    </div>
+</section>
+
+<!-- ==============================
+     FALLING WORDS
+============================== -->
+<section id="view-falling" class="view game-view" aria-label="Falling words game">
+    <div class="toolbar">
+        <button class="back" onclick="switchView('view-landing')">← BACK</button>
+        <div class="game-stats">
+            <div id="fw-lives" class="life-battery" role="img" aria-label="3 chances remaining"></div>
+            <div class="score-panel">
+                <span class="score-label">ENERGY<br>POINTS</span>
+                <span id="fw-score" class="score-value">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="fw-area" class="fall-area">
+        <div class="fall-caption">STATION 02 / CATCH THE MEANING</div>
+        <div class="lane-lines" aria-hidden="true"></div>
+        <div class="finish-line" aria-hidden="true"></div>
+        <div id="fw-word" class="fall-word"></div>
+
+        <div id="fw-over" class="game-over hidden">
+            <div class="game-over-symbol" aria-hidden="true">🔋</div>
+            <h2>TIME TO RECHARGE</h2>
+            <p>Your energy points: <span id="fw-final-score" class="final-number">0</span></p>
+            <button class="primary" onclick="startFallingGame()">RECHARGE &amp; PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <div id="fw-feedback" class="feedback" aria-live="polite"></div>
+    <div id="fw-options" class="options"></div>
+</section>
+
+<!-- ==============================
+     FOUR CORNERS
+============================== -->
+<section id="view-corners" class="view game-view" aria-label="Four corners game">
+    <div class="toolbar">
+        <button class="back" onclick="switchView('view-landing')">← BACK</button>
+        <span id="c4-progress">1 / 62</span>
+        <div class="score-panel">
+            <span class="score-label">CONNECTION<br>POINTS</span>
+            <span id="c4-score" class="score-value">0</span>
+        </div>
+    </div>
+
+    <div class="c4-layout">
+        <button id="c4-btn-0" class="answer port-answer" onclick="handle4CTap(0)">
+            <span class="port-label">PORT A · 1</span>
+            <span class="port-symbol" aria-hidden="true">⏚</span>
+            <span class="port-text"></span>
+        </button>
+
+        <button id="c4-btn-1" class="answer port-answer" onclick="handle4CTap(1)">
+            <span class="port-label">PORT B · 2</span>
+            <span class="port-symbol" aria-hidden="true">⏚</span>
+            <span class="port-text"></span>
+        </button>
+
+        <div id="c4-box" class="question-box">
+            <div class="question-header">
+                <span aria-hidden="true">🔌</span> CONNECT THE MEANING
+            </div>
+            <h3 id="c4-question"></h3>
+            <div class="question-hint">What does the highlighted word mean in this sentence?</div>
+            <div id="c4-feedback" aria-live="polite"></div>
+        </div>
+
+        <button id="c4-btn-2" class="answer port-answer" onclick="handle4CTap(2)">
+            <span class="port-label">PORT C · 3</span>
+            <span class="port-symbol" aria-hidden="true">⏚</span>
+            <span class="port-text"></span>
+        </button>
+
+        <button id="c4-btn-3" class="answer port-answer" onclick="handle4CTap(3)">
+            <span class="port-label">PORT D · 4</span>
+            <span class="port-symbol" aria-hidden="true">⏚</span>
+            <span class="port-text"></span>
+        </button>
+    </div>
+</section>
+
+</div>
+
+<script>
+"use strict";
+
+/* ==============================
+   VOCABULARY
+   ___ marks the target word.
+============================== */
+const rawVocabData = [
+    // NOUNS — 28
+    {
+        word: "bill", pos: "Noun", meaning: "帳單",
+        example: "Could we have the ___, please?"
+    },
+    {
+        word: "connectivity", pos: "Noun", meaning: "網絡連接／連線狀況",
+        example: "The hotel offers good Wi-Fi ___ in every room."
+    },
+    {
+        word: "cost", pos: "Noun", meaning: "費用／成本",
+        example: "The ___ of the trip includes lunch."
+    },
+    {
+        word: "demand", pos: "Noun", meaning: "需求",
+        example: "There is strong ___ for this new phone."
+    },
+    {
+        word: "discussion", pos: "Noun", meaning: "討論",
+        example: "We had a useful ___ about the school event."
+    },
+    {
+        word: "electricity", pos: "Noun", meaning: "電力",
+        example: "The storm left several homes without ___."
+    },
+    {
+        word: "engineer", pos: "Noun", meaning: "工程師",
+        example: "An ___ checked the bridge for damage."
+    },
+    {
+        word: "expansion", pos: "Noun", meaning: "擴充／擴建",
+        example: "The ___ of the library created more study space."
+    },
+    {
+        word: "feasibility", pos: "Noun", meaning: "可行性",
+        example: "We need to assess the ___ of opening a cafe here."
+    },
+    {
+        word: "feature", pos: "Noun", meaning: "功能",
+        example: "This camera has a useful night-mode ___."
+    },
+    {
+        word: "figures", pos: "Noun", meaning: "數字／數據",
+        example: "The latest sales ___ are better than expected."
+    },
+    {
+        word: "funding", pos: "Noun", meaning: "資金／經費",
+        example: "The art club received ___ for a new project."
+    },
+    {
+        word: "image", pos: "Noun", meaning: "形象",
+        example: "Friendly service helps build a positive brand ___."
+    },
+    {
+        word: "installation", pos: "Noun", meaning: "安裝／裝設",
+        example: "The ___ of the air conditioner takes two hours."
+    },
+    {
+        word: "interruptions", pos: "Noun", meaning: "中斷",
+        example: "Frequent phone calls caused ___ to the lesson."
+    },
+    {
+        word: "maintenance", pos: "Noun", meaning: "維修及保養",
+        example: "The lift is closed for routine ___."
+    },
+    {
+        word: "need", pos: "Noun", meaning: "需要／需求",
+        example: "There is an urgent ___ for clean drinking water."
+    },
+    {
+        word: "option", pos: "Noun", meaning: "選項／方案",
+        example: "Taking the train is the cheapest ___."
+    },
+    {
+        word: "overload", pos: "Noun", meaning: "超負荷／過載",
+        example: "Too many appliances can cause an electrical ___."
+    },
+    {
+        word: "power", pos: "Noun", meaning: "電力",
+        example: "The computer shut down during a ___ cut."
+    },
+    {
+        word: "queue", pos: "Noun", meaning: "輪候隊伍／車龍",
+        example: "We joined the ___ outside the cinema."
+    },
+    {
+        word: "record", pos: "Noun", meaning: "紀錄",
+        example: "The nurse checked my medical ___."
+    },
+    {
+        word: "review", pos: "Noun", meaning: "檢視／審視",
+        example: "A safety ___ took place after the accident."
+    },
+    {
+        word: "risk", pos: "Noun", meaning: "風險",
+        example: "A wet floor increases the ___ of a fall."
+    },
+    {
+        word: "survey", pos: "Noun", meaning: "調查／問卷調查",
+        example: "Please complete this short customer ___."
+    },
+    {
+        word: "update", pos: "Noun", meaning: "更新",
+        example: "The latest software ___ fixed the problem."
+    },
+    {
+        word: "usage", pos: "Noun", meaning: "使用情況／使用量",
+        example: "You can check your mobile data ___ in the app."
+    },
+    {
+        word: "view", pos: "Noun", meaning: "看法／意見",
+        example: "What is your ___ on online learning?"
+    },
+
+    // VERBS — 22
+    {
+        word: "avoid", pos: "Verb", meaning: "避免",
+        example: "Leave early to ___ the traffic."
+    },
+    {
+        word: "collect", pos: "Verb", meaning: "收集",
+        example: "The charity will ___ used books this weekend."
+    },
+    {
+        word: "confirm", pos: "Verb", meaning: "確認／確定",
+        example: "Please ___ your booking by email."
+    },
+    {
+        word: "constrain", pos: "Verb", meaning: "限制／制約",
+        example: "Strict rules can ___ creative thinking."
+    },
+    {
+        word: "control", pos: "Verb", meaning: "控制／調控",
+        example: "Use this button to ___ the volume."
+    },
+    {
+        word: "discuss", pos: "Verb", meaning: "討論／商討",
+        example: "Let us ___ the menu for the party."
+    },
+    {
+        word: "disrupt", pos: "Verb", meaning: "干擾／妨礙正常運作",
+        example: "Loud building work can ___ a lesson."
+    },
+    {
+        word: "explore", pos: "Verb", meaning: "探討／研究",
+        example: "The team will ___ new ways to teach maths."
+    },
+    {
+        word: "gather", pos: "Verb", meaning: "收集／搜集",
+        example: "The reporter will ___ information for the story."
+    },
+    {
+        word: "guide", pos: "Verb", meaning: "為……提供指引／依據",
+        example: "Customer feedback can ___ our decisions."
+    },
+    {
+        word: "limit", pos: "Verb", meaning: "限制",
+        example: "Try to ___ your screen time before bed."
+    },
+    {
+        word: "meet", pos: "Verb", meaning: "滿足／應付",
+        example: "The hotel can ___ our needs."
+    },
+    {
+        word: "need", pos: "Verb", meaning: "需要",
+        example: "You may ___ a jacket this evening."
+    },
+    {
+        word: "record", pos: "Verb", meaning: "記錄",
+        example: "Please ___ the room temperature every hour."
+    },
+    {
+        word: "reduce", pos: "Verb", meaning: "減少／降低",
+        example: "Using a lunch box can ___ plastic waste."
+    },
+    {
+        word: "review", pos: "Verb", meaning: "檢視／審視",
+        example: "The school will ___ its safety rules."
+    },
+    {
+        word: "rise", pos: "Verb", meaning: "上升／增加",
+        example: "Food prices may ___ again next month."
+    },
+    {
+        word: "slow", pos: "Verb", meaning: "使……減慢",
+        example: "Heavy rain can ___ the delivery process."
+    },
+    {
+        word: "store", pos: "Verb", meaning: "儲存",
+        example: "You can ___ your photos on this drive."
+    },
+    {
+        word: "strengthen", pos: "Verb", meaning: "加強／提升",
+        example: "Team games can ___ working relationships."
+    },
+    {
+        word: "suit", pos: "Verb", meaning: "適合／切合……的需要",
+        example: "Does the morning class ___ your schedule?"
+    },
+    {
+        word: "support", pos: "Verb", meaning: "支援／兼容",
+        example: "This app can ___ several languages."
+    },
+
+    // ADJECTIVES — 12
+    {
+        word: "available", pos: "Adjective", meaning: "可用的／可供使用的",
+        example: "A meeting room is ___ on the second floor."
+    },
+    {
+        word: "charging", pos: "Adjective", meaning: "充電的／用作充電的",
+        example: "I left my phone's ___ cable at home."
+    },
+    {
+        word: "departmental", pos: "Adjective", meaning: "部門的",
+        example: "The manager shared the ___ timetable."
+    },
+    {
+        word: "extra", pos: "Adjective", meaning: "額外的",
+        example: "We need an ___ chair for our guest."
+    },
+    {
+        word: "future", pos: "Adjective", meaning: "未來的／日後的",
+        example: "She is saving money for her ___ studies."
+    },
+    {
+        word: "helpful", pos: "Adjective", meaning: "有幫助的／有用的",
+        example: "The receptionist gave us some ___ advice."
+    },
+    {
+        word: "initial", pos: "Adjective", meaning: "最初的／初期的",
+        example: "Our ___ plan was to travel by bus."
+    },
+    {
+        word: "off-peak", pos: "Adjective", meaning: "非繁忙時段的",
+        example: "An ___ train ticket is often cheaper."
+    },
+    {
+        word: "peak-hour", pos: "Adjective", meaning: "繁忙時段的／高峰時段的",
+        example: "The ___ bus service runs every five minutes."
+    },
+    {
+        word: "popular", pos: "Adjective", meaning: "受歡迎的",
+        example: "This noodle shop is ___ with students."
+    },
+    {
+        word: "upfront", pos: "Adjective", meaning: "前期的／開始時須支付的",
+        example: "The course requires an ___ payment."
+    },
+    {
+        word: "useful", pos: "Adjective", meaning: "有用的／有幫助的",
+        example: "This map is ___ for finding local museums."
+    }
+];
+
+/* ==============================
+   HELPERS
+============================== */
+const $ = id => document.getElementById(id);
+
+function shuffle(items) {
+    const result = [...items];
+
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    return result;
+}
+
+function fullExample(item) {
+    return item.example.replace("___", item.word);
+}
+
+function meaningParts(text) {
+    return text.split(/[／/]/).map(part => part.trim()).filter(Boolean);
+}
+
+function meaningsOverlap(a, b) {
+    const aParts = meaningParts(a);
+    const bParts = meaningParts(b);
+    return aParts.some(part => bParts.includes(part));
+}
+
+function makeOptions(item) {
+    const result = [item.meaning];
+
+    const candidates = [
+        ...shuffle(rawVocabData.filter(other => other.pos === item.pos)),
+        ...shuffle(rawVocabData)
+    ];
+
+    for (const candidate of candidates) {
+        if (result.length === 4) break;
+
+        const overlap = result.some(existing =>
+            meaningsOverlap(existing, candidate.meaning)
+        );
+
+        if (!overlap) result.push(candidate.meaning);
+    }
+
+    return shuffle(result);
+}
+
+function pulse(element) {
+    element.classList.remove("energy-pulse");
+    void element.offsetWidth;
+    element.classList.add("energy-pulse");
+}
+
+/* ==============================
+   BACKGROUND
+============================== */
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let motionPaused = reducedMotion.matches;
+
+function initBackground() {
+    const emojis = ["🚗", "🚙", "🔋", "⚡", "🔌", "🌱"];
+    const container = $("emoji-bg");
+
+    for (let i = 0; i < 14; i++) {
+        const emoji = document.createElement("span");
+
+        emoji.className = "floating-emoji";
+        emoji.textContent = emojis[i % emojis.length];
+        emoji.style.left = (Math.random() * 96) + "%";
+        emoji.style.fontSize = (22 + Math.random() * 22) + "px";
+        emoji.style.animationDuration = (25 + Math.random() * 20) + "s";
+        emoji.style.animationDelay = (-Math.random() * 45) + "s";
+        emoji.style.setProperty("--drift", (-65 + Math.random() * 130) + "px");
+
+        container.appendChild(emoji);
+    }
+
+    updateMotionUI();
+}
+
+function updateMotionUI() {
+    document.body.classList.toggle("motion-off", motionPaused);
+
+    $("motion-toggle").textContent = motionPaused
+        ? "Resume background animation"
+        : "Pause background animation";
+
+    $("motion-toggle").setAttribute("aria-pressed", String(motionPaused));
+}
+
+function toggleMotion() {
+    motionPaused = !motionPaused;
+    updateMotionUI();
+}
+
+/* ==============================
+   AUDIO
+============================== */
+let activeUtterance = null;
+
+function playAudio(text) {
+    if (!("speechSynthesis" in window)) return;
+
+    window.speechSynthesis.cancel();
+
+    activeUtterance = new SpeechSynthesisUtterance(text);
+    activeUtterance.lang = "en-GB";
+    activeUtterance.rate = 0.85;
+
+    const voice = window.speechSynthesis.getVoices().find(
+        item => item.lang.toLowerCase() === "en-gb"
+    );
+
+    if (voice) activeUtterance.voice = voice;
+
+    window.speechSynthesis.speak(activeUtterance);
+}
+
+/* ==============================
+   STATE / NAVIGATION
+============================== */
+let currentView = "view-landing";
+
+let fcIndex = 0;
+let fcFlipped = false;
+
+let fwScore = 0;
+let fwLives = 3;
+let fwActive = false;
+let fwLocked = true;
+let fwCurrentWord = null;
+let fwDeck = [];
+let fwFallTimer = null;
+let fwNextTimer = null;
+
+let c4Data = [];
+let c4Index = 0;
+let c4Score = 0;
+let c4Locked = true;
+let c4CurrentItem = null;
+let c4Options = [];
+let c4Timer = null;
+
+function stopActivities() {
+    clearTimeout(fwFallTimer);
+    clearTimeout(fwNextTimer);
+    clearTimeout(c4Timer);
+
+    fwActive = false;
+    fwLocked = true;
+    c4Locked = true;
+
+    $("fw-word").style.animation = "none";
+
+    if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+    }
+}
+
+function switchView(viewId) {
+    stopActivities();
+    currentView = viewId;
+
+    document.querySelectorAll(".view").forEach(view => {
+        view.classList.toggle("active", view.id === viewId);
+    });
+
+    document.body.dataset.mode =
+        viewId === "view-landing" ? "landing" :
+        viewId === "view-flashcard" ? "flashcard" : "game";
+
+    window.scrollTo(0, 0);
+
+    if (viewId === "view-flashcard") initFlashcards();
+    if (viewId === "view-falling") startFallingGame();
+    if (viewId === "view-corners") start4CGame();
+}
+
+/* ==============================
+   FLASH CARDS
+============================== */
+function initFlashcards() {
+    fcIndex = 0;
+    snapToFront();
+    renderFlashcard();
+    playAudio(rawVocabData[fcIndex].word);
+}
+
+function updateCardFaces() {
+    $("fc-inner").classList.toggle("flipped", fcFlipped);
+
+    $("fc-front").inert = fcFlipped;
+    $("fc-back").inert = !fcFlipped;
+
+    $("fc-front").tabIndex = fcFlipped ? -1 : 0;
+    $("fc-back").tabIndex = fcFlipped ? 0 : -1;
+
+    $("fc-front").setAttribute("aria-hidden", String(fcFlipped));
+    $("fc-back").setAttribute("aria-hidden", String(!fcFlipped));
+}
+
+function renderFlashcard() {
+    const item = rawVocabData[fcIndex];
+
+    $("fc-counter").textContent = `${fcIndex + 1} / ${rawVocabData.length}`;
+    $("fc-word").textContent = item.word;
+    $("fc-meaning").textContent = item.meaning;
+    $("fc-example").textContent = fullExample(item);
+
+    ["fc-pos-front", "fc-pos-back"].forEach(id => {
+        $(id).textContent = item.pos;
+        $(id).className = `pos ${item.pos.toLowerCase()}`;
+    });
+
+    const battery = $("fc-battery");
+    battery.replaceChildren();
+
+    const filledCount = Math.ceil((fcIndex + 1) / rawVocabData.length * 12);
+
+    for (let i = 0; i < 12; i++) {
+        const cell = document.createElement("span");
+        cell.className = "battery-segment" + (i < filledCount ? " filled" : "");
+        battery.appendChild(cell);
+    }
+
+    battery.setAttribute("aria-valuemax", String(rawVocabData.length));
+    battery.setAttribute("aria-valuenow", String(fcIndex + 1));
+
+    $("btn-prev").disabled = fcIndex === 0;
+    $("btn-next").disabled = fcIndex === rawVocabData.length - 1;
+
+    updateCardFaces();
+}
+
+function toggleFlashcard() {
+    fcFlipped = !fcFlipped;
+    updateCardFaces();
+
+    const item = rawVocabData[fcIndex];
+    playAudio(fcFlipped ? fullExample(item) : item.word);
+}
+
+function handleCardKey(event) {
+    if (event.target !== event.currentTarget) return;
+
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleFlashcard();
+        (fcFlipped ? $("fc-back") : $("fc-front")).focus();
+    }
+}
+
+function playFcAudio(event, example) {
+    event.stopPropagation();
+
+    const item = rawVocabData[fcIndex];
+    playAudio(example ? fullExample(item) : item.word);
+}
+
+function snapToFront() {
+    fcFlipped = false;
+
+    const inner = $("fc-inner");
+    inner.style.transition = "none";
+    inner.classList.remove("flipped");
+    void inner.offsetWidth;
+    inner.style.transition = "";
+
+    updateCardFaces();
+}
+
+function moveCard(direction) {
+    const nextIndex = fcIndex + direction;
+
+    if (nextIndex < 0 || nextIndex >= rawVocabData.length) return;
+
+    fcIndex = nextIndex;
+    snapToFront();
+    renderFlashcard();
+    playAudio(rawVocabData[fcIndex].word);
+}
+
+/* ==============================
+   FALLING WORDS
+============================== */
+function updateFwUI() {
+    $("fw-score").textContent = fwScore;
+
+    const battery = $("fw-lives");
+    battery.replaceChildren();
+
+    for (let i = 0; i < 3; i++) {
+        const cell = document.createElement("span");
+        cell.className =
+            "life-cell" +
+            (i >= fwLives ? " empty" : fwLives === 1 ? " warning" : "");
+
+        battery.appendChild(cell);
+    }
+
+    battery.setAttribute("aria-label", `${fwLives} chances remaining`);
+}
+
+function setFwButtonsDisabled(disabled) {
+    $("fw-options").querySelectorAll("button").forEach(button => {
+        button.disabled = disabled;
+    });
+}
+
+function startFallingGame() {
+    clearTimeout(fwFallTimer);
+    clearTimeout(fwNextTimer);
+
+    fwScore = 0;
+    fwLives = 3;
+    fwActive = true;
+    fwLocked = false;
+    fwDeck = [];
+
+    $("fw-over").classList.add("hidden");
+    $("fw-word").classList.remove("hidden");
+    $("fw-feedback").textContent = "";
+
+    updateFwUI();
+    spawnFwWord();
+}
+
+function spawnFwWord() {
+    if (!fwActive || currentView !== "view-falling") return;
+
+    clearTimeout(fwFallTimer);
+    fwLocked = false;
+    $("fw-feedback").textContent = "";
+
+    if (fwDeck.length === 0) fwDeck = shuffle(rawVocabData);
+    fwCurrentWord = fwDeck.pop();
+
+    const wordBox = $("fw-word");
+    wordBox.replaceChildren();
+
+    const word = document.createElement("div");
+    word.textContent = fwCurrentWord.word;
+
+    const pos = document.createElement("div");
+    pos.textContent = fwCurrentWord.pos;
+    pos.className = "fall-pos";
+
+    wordBox.append(word, pos);
+
+    $("fw-options").replaceChildren();
+
+    makeOptions(fwCurrentWord).forEach((option, index) => {
+        const button = document.createElement("button");
+
+        button.className = "answer";
+        button.textContent = option;
+        button.setAttribute("aria-label", `Option ${index + 1}: ${option}`);
+        button.onclick = () => handleFwSelect(option, button);
+
+        $("fw-options").appendChild(button);
+    });
+
+    const duration = Math.max(3.5, 8 - Math.floor(fwScore / 40) * 0.5);
+
+    wordBox.style.animation = "none";
+    void wordBox.offsetWidth;
+    wordBox.style.animation = `fall ${duration}s linear forwards`;
+
+    fwFallTimer = setTimeout(
+        () => resolveFwAnswer(false, null),
+        duration * 1000
+    );
+}
+
+function handleFwSelect(selected, button) {
+    if (!fwActive || fwLocked) return;
+    resolveFwAnswer(selected === fwCurrentWord.meaning, button);
+}
+
+function resolveFwAnswer(correct, button) {
+    if (!fwActive || fwLocked || currentView !== "view-falling") return;
+
+    fwLocked = true;
+    clearTimeout(fwFallTimer);
+
+    $("fw-word").style.animationPlayState = "paused";
+    setFwButtonsDisabled(true);
+
+    if (correct) {
+        fwScore += 10;
+        if (button) button.classList.add("correct-answer");
+
+        $("fw-feedback").style.color = "#8df7b0";
+        $("fw-feedback").textContent = "⚡ Charged! +10 energy points";
+
+        pulse($("fw-area"));
+        updateFwUI();
+        playAudio(fwCurrentWord.word);
+    } else {
+        fwLives--;
+
+        if (button) button.classList.add("wrong-answer");
+
+        $("fw-feedback").style.color = "#ffbd80";
+        $("fw-feedback").textContent =
+            `${fwCurrentWord.word} (${fwCurrentWord.pos}): ${fwCurrentWord.meaning}`;
+
+        $("fw-options").querySelectorAll("button").forEach(optionButton => {
+            if (optionButton.textContent === fwCurrentWord.meaning) {
+                optionButton.classList.add("correct-answer");
+            }
+        });
+
+        updateFwUI();
+    }
+
+    fwNextTimer = setTimeout(() => {
+        if (!fwActive || currentView !== "view-falling") return;
+
+        if (fwLives <= 0) endFwGame();
+        else spawnFwWord();
+
+    }, correct ? 700 : 1800);
+}
+
+function endFwGame() {
+    fwActive = false;
+    fwLocked = true;
+
+    clearTimeout(fwFallTimer);
+    clearTimeout(fwNextTimer);
+
+    $("fw-word").classList.add("hidden");
+    $("fw-over").classList.remove("hidden");
+    $("fw-final-score").textContent = fwScore;
+    $("fw-options").replaceChildren();
+    $("fw-feedback").textContent = "";
+}
+
+/* ==============================
+   FOUR CORNERS
+============================== */
+function start4CGame() {
+    clearTimeout(c4Timer);
+
+    c4Data = shuffle(rawVocabData);
+    c4Index = 0;
+    c4Score = 0;
+
+    $("c4-score").textContent = "0";
+    load4CQuestion();
+}
+
+function load4CQuestion() {
+    if (currentView !== "view-corners") return;
+
+    c4Locked = false;
+    c4CurrentItem = c4Data[c4Index];
+    c4Options = makeOptions(c4CurrentItem);
+
+    $("c4-progress").textContent = `${c4Index + 1} / ${c4Data.length}`;
+    $("c4-feedback").textContent = "";
+
+    const question = $("c4-question");
+    question.replaceChildren();
+
+    const parts = c4CurrentItem.example.split("___");
+
+    question.appendChild(document.createTextNode(parts[0]));
+
+    const target = document.createElement("span");
+    target.textContent = c4CurrentItem.word;
+    target.className = `highlight ${c4CurrentItem.pos.toLowerCase()}`;
+
+    question.appendChild(target);
+    question.appendChild(document.createTextNode(parts[1] || ""));
+
+    for (let i = 0; i < 4; i++) {
+        const button = $(`c4-btn-${i}`);
+
+        button.querySelector(".port-text").textContent = c4Options[i];
+        button.disabled = false;
+        button.classList.remove("correct-answer", "wrong-answer");
+    }
+}
+
+function handle4CTap(index) {
+    if (c4Locked || currentView !== "view-corners") return;
+
+    c4Locked = true;
+    const correct = c4Options[index] === c4CurrentItem.meaning;
+
+    for (let i = 0; i < 4; i++) {
+        $(`c4-btn-${i}`).disabled = true;
+    }
+
+    if (correct) {
+        c4Score += 10;
+        $("c4-score").textContent = c4Score;
+
+        $(`c4-btn-${index}`).classList.add("correct-answer");
+        $("c4-feedback").style.color = "#8df7b0";
+        $("c4-feedback").textContent = "⚡ Connection successful! +10";
+
+        pulse($("c4-box"));
+        playAudio(fullExample(c4CurrentItem));
+
+        c4Timer = setTimeout(() => {
+            if (currentView !== "view-corners") return;
+
+            c4Index++;
+
+            if (c4Index >= c4Data.length) {
+                c4Data = shuffle(rawVocabData);
+                c4Index = 0;
+            }
+
+            load4CQuestion();
+        }, 2000);
+
+    } else {
+        $(`c4-btn-${index}`).classList.add("wrong-answer");
+
+        $("c4-feedback").style.color = "#ffbd80";
+        $("c4-feedback").textContent = "Not connected yet. Try another port.";
+
+        c4Timer = setTimeout(() => {
+            if (currentView !== "view-corners") return;
+
+            $(`c4-btn-${index}`).classList.remove("wrong-answer");
+
+            for (let i = 0; i < 4; i++) {
+                $(`c4-btn-${i}`).disabled = false;
+            }
+
+            $("c4-feedback").textContent = "";
+            c4Locked = false;
+        }, 900);
+    }
+}
+
+/* ==============================
+   KEYBOARD CONTROLS
+============================== */
+document.addEventListener("keydown", event => {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+    if (currentView === "view-flashcard") {
+        if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            moveCard(-1);
+        }
+
+        if (event.key === "ArrowRight") {
+            event.preventDefault();
+            moveCard(1);
+        }
+    }
+
+    if (/^[1-4]$/.test(event.key) && !event.repeat) {
+        const index = Number(event.key) - 1;
+
+        if (currentView === "view-corners") {
+            event.preventDefault();
+            handle4CTap(index);
+        }
+
+        if (currentView === "view-falling" && fwActive && !fwLocked) {
+            const button = $("fw-options").querySelectorAll("button")[index];
+
+            if (button) {
+                event.preventDefault();
+                button.click();
+            }
+        }
+    }
+});
+
+/* ==============================
+   INITIALISE
+============================== */
+initBackground();
+updateCardFaces();
+</script>
+</body>
+</html>
